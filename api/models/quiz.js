@@ -15,14 +15,12 @@ const quizSchema = new mongoose.Schema({
             //required: true
         }]
     }],
-    // correctAnswers: [{
-    //     type: String,
-    //     //required: true
-    // }]
+  
 },
 {
     timestamps: true,
     _id: true,
-});
+}
+);
 
 module.exports = mongoose.model("Quiz", quizSchema);

@@ -1,5 +1,6 @@
 const Quiz = require("../models/quiz");
 const { StatusCodes } = require("http-status-codes");
+const Response = require("../models/response");
 
 const addQuiz = async (req, res, next) => {
   try {
@@ -33,7 +34,7 @@ const addQuiz = async (req, res, next) => {
 const getQuizList = async (req, res, next) => {
   try {
     const quizzes = await Quiz.find();
-    
+
     if (quizzes.length > 0) {
       return res.status(StatusCodes.OK).json({
         message: "SUCCESS",
@@ -54,16 +55,13 @@ const getQuizList = async (req, res, next) => {
   }
 };
 
-
 const getQuizById = async (req, res, next) => {
   try {
-
     const { quizId } = req.params;
     const quiz = await Quiz.findById({
       _id: quizId,
-  
-    })
-    
+    });
+
     if (quiz) {
       return res.status(StatusCodes.OK).json({
         message: "SUCCESS",
@@ -84,8 +82,37 @@ const getQuizById = async (req, res, next) => {
   }
 };
 
+const submitQuiz = async (req, res, next) => {
+  try {
+    const { quizId, responses } = req.body;
+
+    const newResponse = new Response({
+      quizId: quizId,
+      responses: responses,
+    });
+
+    const submitted = await newResponse.save();
+
+    if (submitted) {
+      return res.status(StatusCodes.OK).json({
+        message: "SUCCESS",
+        data: submitted,
+      });
+    } else {
+      return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "FAILED",
+        description: "Quiz not saved",
+      });
+    }
+  } catch (error) {
+    console.log(error, "error");
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   addQuiz,
   getQuizList,
-  getQuizById
+  getQuizById,
+  submitQuiz,
 };
